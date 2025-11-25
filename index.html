@@ -80,6 +80,29 @@
         .badge-tw { background-color: #e5e7eb; color: #374151; } /* Gray for Taiwan */
         .badge-jp { background-color: #dbeafe; color: #1e40af; } /* Blue for Japan */
 
+        /* Calculator Styles */
+        .calc-input {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: right;
+            color: #374151;
+            background-color: #f9fafb;
+        }
+        .calc-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: white;
+        }
+        .calc-label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-bottom: 2px;
+        }
+
         /* --- PRINT STYLES START --- */
         @media print {
             /* Basic Reset */
@@ -191,6 +214,54 @@
                 <div class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-bold">
                     6大1小
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UTILITIES SECTION: Weather & Currency -->
+    <div class="px-4 mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Weather Forecast (11/27-11/30) -->
+        <div class="bg-gradient-to-br from-cyan-500 to-blue-600 p-3 rounded-xl card-shadow text-white relative overflow-hidden">
+            <div class="flex justify-between items-center mb-2 z-10 relative">
+                <div class="text-xs font-bold opacity-90"><i class="fa-solid fa-cloud-sun"></i> 旅程天氣 (11/27-30)</div>
+                <a href="https://www.google.com/search?q=weather+Okinawa+Naha" target="_blank" class="text-[10px] bg-white/20 px-2 py-0.5 rounded hover:bg-white/30 transition">詳情 <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+            
+            <!-- Forecast Grid Container (Updated for new layout) -->
+            <div id="forecast-container" class="grid grid-cols-4 gap-2 z-10 relative mt-2">
+                <div class="col-span-4 text-center text-xs opacity-80 py-4"><i class="fa-solid fa-spinner fa-spin"></i> 載入預報中...</div>
+            </div>
+
+            <!-- Background Decoration -->
+            <div class="absolute -bottom-4 -right-4 text-white opacity-10 text-6xl transform rotate-12 pointer-events-none">
+                <i class="fa-solid fa-sun"></i>
+            </div>
+        </div>
+
+        <!-- Currency Calculator -->
+        <div class="bg-white p-3 rounded-xl card-shadow border border-gray-100 relative">
+            <div class="flex justify-between items-center mb-2">
+                <div class="text-xs font-bold text-gray-500"><i class="fa-solid fa-calculator"></i> 匯率試算</div>
+                <div id="rate-status" class="text-[10px] text-gray-400"><i class="fa-solid fa-spinner fa-spin"></i> 更新中...</div>
+            </div>
+            
+            <div class="space-y-2">
+                <!-- JPY Input -->
+                <div class="flex items-center gap-1">
+                    <span class="text-xs font-bold text-blue-600 w-6">¥</span>
+                    <input type="number" id="calc-jpy" class="calc-input" placeholder="日幣">
+                </div>
+                <!-- TWD Input -->
+                <div class="flex items-center gap-1">
+                    <span class="text-xs font-bold text-gray-600 w-6">$</span>
+                    <input type="number" id="calc-twd" class="calc-input" placeholder="台幣">
+                </div>
+            </div>
+
+            <!-- Rate Setting -->
+            <div class="mt-2 pt-2 border-t border-gray-100 flex justify-between items-center">
+                <span class="text-[10px] text-gray-400">匯率 (1日幣):</span>
+                <input type="number" id="calc-rate" value="0.215" step="0.0001" class="w-16 text-[10px] text-right bg-transparent border-b border-gray-300 focus:outline-none focus:border-blue-500 text-gray-500">
             </div>
         </div>
     </div>
@@ -556,48 +627,167 @@
         <p class="text-center text-gray-400 text-sm mt-6">祝 沖繩之旅 快樂順利！</p>
     </footer>
 
-    <!-- Script for Scroll Spy -->
+    <!-- Script for Scroll Spy & Real-Time Data -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- Scroll Spy Logic ---
             const navLinks = document.querySelectorAll('.nav-link');
             const sections = document.querySelectorAll('section');
-            const headerOffset = 200; // Adjust to trigger a bit earlier
+            const headerOffset = 200;
 
             function changeLinkState() {
                 let index = sections.length;
-
-                // Find the last section whose top is above the visual threshold
                 while(--index && window.scrollY + headerOffset < sections[index].offsetTop) {}
                 
-                // Reset all links
                 navLinks.forEach((link) => {
                     link.classList.remove('bg-blue-600', 'text-white');
                     link.classList.add('bg-white', 'text-blue-600');
                 });
 
-                // Set active link if valid index
                 if (index >= 0) {
                      navLinks[index].classList.remove('bg-white', 'text-blue-600');
                      navLinks[index].classList.add('bg-blue-600', 'text-white');
-                     
-                     // Auto-scroll nav bar to keep active button in view
                      navLinks[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 }
             }
 
-            // Listen for scroll
             window.addEventListener('scroll', changeLinkState);
-            
-            // Initial call
             changeLinkState();
 
-            // Improve click UX: Update immediately on click
             navLinks.forEach(link => {
                 link.addEventListener('click', () => {
-                    // Small timeout to allow smooth scroll to start
                     setTimeout(changeLinkState, 50);
                 });
             });
+
+            // --- Currency Calculator Logic (Offline + Realtime) ---
+            const jpyInput = document.getElementById('calc-jpy');
+            const twdInput = document.getElementById('calc-twd');
+            const rateInput = document.getElementById('calc-rate');
+            const rateStatus = document.getElementById('rate-status');
+            const RATE_KEY = 'okinawa_exchange_rate';
+
+            async function fetchLiveRate() {
+                const savedRate = localStorage.getItem(RATE_KEY);
+                if (savedRate) {
+                    rateInput.value = savedRate;
+                    rateStatus.innerHTML = '<span class="text-gray-500"><i class="fa-solid fa-clock-rotate-left"></i> 上次紀錄</span>';
+                }
+
+                try {
+                    const response = await fetch('https://api.exchangerate-api.com/v4/latest/JPY');
+                    const data = await response.json();
+                    const twdRate = data.rates.TWD;
+
+                    if (twdRate) {
+                        const formattedRate = twdRate.toFixed(4);
+                        rateInput.value = formattedRate;
+                        rateStatus.innerHTML = '<span class="text-green-600"><i class="fa-solid fa-check-circle"></i> 已更新</span>';
+                        localStorage.setItem(RATE_KEY, formattedRate);
+                        if (jpyInput.value) calculateFromJpy();
+                    }
+                } catch (error) {
+                    if (savedRate) {
+                         rateStatus.innerHTML = '<span class="text-orange-500"><i class="fa-solid fa-wifi-slash"></i> 離線模式</span>';
+                    } else {
+                        rateStatus.innerHTML = '<span class="text-gray-400">使用預設值</span>';
+                    }
+                }
+            }
+
+            function calculateFromJpy() {
+                const jpy = parseFloat(jpyInput.value);
+                const rate = parseFloat(rateInput.value);
+                if (!isNaN(jpy) && !isNaN(rate)) {
+                    twdInput.value = Math.round(jpy * rate);
+                } else if (jpyInput.value === '') {
+                    twdInput.value = '';
+                }
+            }
+
+            function calculateFromTwd() {
+                const twd = parseFloat(twdInput.value);
+                const rate = parseFloat(rateInput.value);
+                if (!isNaN(twd) && !isNaN(rate) && rate !== 0) {
+                    jpyInput.value = Math.round(twd / rate);
+                } else if (twdInput.value === '') {
+                    jpyInput.value = '';
+                }
+            }
+
+            jpyInput.addEventListener('input', calculateFromJpy);
+            twdInput.addEventListener('input', calculateFromTwd);
+            
+            rateInput.addEventListener('input', () => {
+                if (jpyInput.value !== '') calculateFromJpy();
+                rateStatus.innerHTML = '<span class="text-blue-500">手動輸入</span>';
+                localStorage.setItem(RATE_KEY, rateInput.value);
+            });
+
+            // --- Weather Fetch Logic (Forecast for 11/27-11/30) ---
+            const forecastContainer = document.getElementById('forecast-container');
+
+            async function fetchWeather() {
+                try {
+                    // Request Specific Dates: 2025-11-27 to 2025-11-30
+                    const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=26.2124&longitude=127.6809&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&start_date=2025-11-27&end_date=2025-11-30');
+                    const data = await response.json();
+                    
+                    if (!data.daily) throw new Error("No daily data");
+
+                    const daily = data.daily;
+                    let htmlContent = '';
+
+                    // Loop through the 4 days
+                    for (let i = 0; i < daily.time.length; i++) {
+                        const dateStr = daily.time[i]; // "2025-11-27"
+                        const maxTemp = Math.round(daily.temperature_2m_max[i]);
+                        const minTemp = Math.round(daily.temperature_2m_min[i]);
+                        const precip = daily.precipitation_probability_max[i];
+                        const code = daily.weather_code[i];
+
+                        // Format Date (e.g., "11/27 (四)")
+                        const dateObj = new Date(dateStr);
+                        const dayOfWeek = ['日', '一', '二', '三', '四', '五', '六'][dateObj.getDay()];
+                        const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()} (${dayOfWeek})`;
+
+                        // Weather Icon Logic
+                        let iconClass = 'fa-cloud';
+                        let iconColor = 'text-white';
+                        if (code === 0) { iconClass = 'fa-sun'; iconColor = 'text-yellow-300'; }
+                        else if (code <= 3) { iconClass = 'fa-cloud-sun'; }
+                        else if (code <= 48) { iconClass = 'fa-smog'; }
+                        else if (code <= 67) { iconClass = 'fa-cloud-rain'; iconColor = 'text-blue-200'; }
+                        else if (code >= 80 && code <= 82) { iconClass = 'fa-cloud-showers-heavy'; iconColor = 'text-blue-300'; }
+                        else if (code >= 95) { iconClass = 'fa-bolt'; iconColor = 'text-yellow-400'; }
+
+                        // Rain badge logic: Always show, even if 0%
+                        const precipValue = precip !== null ? precip : 0;
+                        // Use gray for 0%, blue for any rain chance
+                        const badgeColor = precipValue > 0 ? "text-blue-200" : "text-gray-300 opacity-60";
+                        const rainBadge = `<span class="text-[10px] ${badgeColor} font-bold"><i class="fa-solid fa-umbrella"></i> ${precipValue}%</span>`;
+
+                        htmlContent += `
+                            <div class="flex flex-col items-center bg-white/10 rounded p-1 backdrop-blur-sm">
+                                <div class="text-[10px] opacity-80 mb-1">${formattedDate}</div>
+                                <div class="text-xl ${iconColor} mb-1"><i class="fa-solid ${iconClass}"></i></div>
+                                <div class="text-xs font-bold mb-1">${minTemp}°-${maxTemp}°</div>
+                                <div class="h-4 flex items-center">${rainBadge}</div> 
+                            </div>
+                        `;
+                    }
+
+                    forecastContainer.innerHTML = htmlContent;
+
+                } catch (error) {
+                    console.error('Weather fetch failed', error);
+                    forecastContainer.innerHTML = '<div class="col-span-4 text-center text-xs opacity-70 py-2">暫時無法取得預報<br>請點擊詳情查看</div>';
+                }
+            }
+
+            // Init Fetches
+            fetchLiveRate();
+            fetchWeather();
         });
     </script>
 </body>
