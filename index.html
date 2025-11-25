@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2025沖繩行</title>
+    
+    <!-- Web App Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0ea5e9">
+    
+    <!-- Dynamic App Icon (Plane Emoji on Blue Background) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230ea5e9%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2260%22>✈️</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230ea5e9%22 rx=%2220%22/><text x=%2250%22 y=%2250%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2260%22>✈️</text></svg>">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
+        html {
+            scroll-behavior: smooth; /* Enable smooth scrolling */
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0f9ff; /* Light Blue Background */
+            /* Prevent pull-to-refresh on mobile to feel more like an app */
+            overscroll-behavior-y: none;
+        }
+
+        .gradient-header {
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            padding-top: env(safe-area-inset-top); /* Handle iPhone Notch */
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 1rem;
+            top: 2.5rem;
+            bottom: 0;
+            width: 2px;
+            background-color: #e5e7eb;
+            z-index: 0;
+        }
+
+        .card-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        /* Map Link Styling */
+        .map-link {
+            color: #1f2937; /* gray-800 */
+            text-decoration: none;
+            border-bottom: 2px dotted #60a5fa; /* blue-400 */
+            padding-bottom: 1px;
+            transition: all 0.2s;
+        }
+        
+        .map-link:hover {
+            color: #2563eb; /* blue-600 */
+            border-bottom-style: solid;
+        }
+
+        .map-icon {
+            font-size: 0.8em;
+            color: #3b82f6;
+            margin-left: 4px;
+        }
+
+        .flight-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 4px;
+        }
+        .badge-tw { background-color: #e5e7eb; color: #374151; } /* Gray for Taiwan */
+        .badge-jp { background-color: #dbeafe; color: #1e40af; } /* Blue for Japan */
+
+        /* --- PRINT STYLES START --- */
+        @media print {
+            /* Basic Reset */
+            body {
+                background-color: white !important;
+                color: black !important;
+                padding-bottom: 0 !important;
+            }
+            
+            /* Hide UI elements unnecessary for paper */
+            .no-print, 
+            footer, 
+            .sticky, 
+            .animate-pulse {
+                display: none !important;
+            }
+
+            /* Adjust Cards for Print */
+            .card-shadow {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                break-inside: avoid; /* Prevent card from splitting */
+            }
+
+            /* Gradient Header adjustment for print */
+            .gradient-header {
+                background: white !important;
+                color: black !important;
+                padding: 10px !important;
+                border-bottom: 2px solid #0ea5e9;
+                text-align: center;
+                box-shadow: none !important;
+            }
+            .gradient-header p {
+                color: #333 !important;
+                justify-content: center;
+            }
+            .gradient-header i {
+                color: #0ea5e9;
+            }
+            /* Hide the decorative background plane icon in header */
+            .gradient-header .absolute {
+                display: none !important;
+            }
+
+            /* Page Break Logic */
+            section {
+                page-break-before: always; /* Force new page for each section */
+                break-before: page;
+                margin-top: 0 !important;
+                padding-top: 20px !important;
+            }
+
+            /* Ensure links are visible but black */
+            a {
+                color: black !important;
+                text-decoration: underline;
+                border: none !important;
+            }
+        }
+        /* --- PRINT STYLES END --- */
+    </style>
+</head>
+<body class="text-gray-700 pb-12">
+
+    <!-- Header Section -->
+    <header class="gradient-header text-white p-6 rounded-b-3xl shadow-lg relative overflow-hidden">
+        <div class="absolute top-0 right-0 opacity-10 text-9xl transform translate-x-10 -translate-y-10">
+            <i class="fa-solid fa-plane-departure"></i>
+        </div>
+        <div class="relative z-10 mt-4 md:mt-0">
+            <h1 class="text-3xl font-bold mb-2">2025沖繩行</h1>
+            <p class="text-blue-100 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-days"></i> 11/27 (四) — 11/30 (日)
+            </p>
+            <p class="text-blue-100 mt-1 flex items-center gap-2">
+                <i class="fa-solid fa-users"></i> 6 大 1 小 (親子自駕)
+            </p>
+        </div>
+    </header>
+
+    <!-- Essential Info Cards -->
+    <div class="px-4 mt-6 grid grid-cols-2 gap-3">
+        <!-- Flight Outbound -->
+        <div class="bg-white p-3 rounded-xl card-shadow border-l-4 border-blue-400">
+            <div class="text-blue-500 mb-1 text-xs"><i class="fa-solid fa-plane-departure"></i> 去程 CI0120</div>
+            <div class="font-bold text-base">08:10 TPE</div>
+            <div class="text-xs text-gray-500">10:45 抵達 OKA</div>
+        </div>
+        <!-- Flight Inbound -->
+        <div class="bg-white p-3 rounded-xl card-shadow border-l-4 border-blue-600">
+            <div class="text-blue-600 mb-1 text-xs"><i class="fa-solid fa-plane-arrival"></i> 回程 CI0121</div>
+            <div class="font-bold text-base">11:55 OKA</div>
+            <div class="text-xs text-gray-500">12:35 抵達 TPE</div>
+        </div>
+    </div>
+    
+    <!-- Car Info -->
+    <div class="px-4 mt-3">
+        <div class="bg-white p-4 rounded-xl card-shadow">
+            <div class="flex justify-between items-start">
+                <div>
+                    <div class="text-green-500 mb-1"><i class="fa-solid fa-car"></i> OTS 租車</div>
+                    <a href="https://www.google.com/maps/search/?api=1&query=日本沖繩縣豐見城市豐崎3-37" target="_blank" class="font-bold text-lg block hover:text-blue-600">
+                        豐崎 取/還 <i class="fa-solid fa-map-location-dot text-sm ml-1"></i>
+                    </a>
+                    <div class="text-xs text-gray-500 mb-1">豐見城市豐崎3-37</div>
+                </div>
+                <div class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-bold">
+                    6大1小
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs (Anchor Links) - Hidden in Print -->
+    <div id="nav-container" class="no-print flex overflow-x-auto gap-2 px-4 mt-6 pb-2 hide-scrollbar sticky top-0 bg-[#f0f9ff] z-50 py-2">
+        <a href="#day1" class="nav-link flex-shrink-0 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow transition active:scale-95">Day 1 抵達</a>
+        <a href="#day2" class="nav-link flex-shrink-0 bg-white text-blue-600 px-4 py-2 rounded-full text-sm font-bold shadow transition active:scale-95">Day 2 水族館</a>
+        <a href="#day3" class="nav-link flex-shrink-0 bg-white text-blue-600 px-4 py-2 rounded-full text-sm font-bold shadow transition active:scale-95">Day 3 美國村</a>
+        <a href="#day4" class="nav-link flex-shrink-0 bg-white text-blue-600 px-4 py-2 rounded-full text-sm font-bold shadow transition active:scale-95">Day 4 返台</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="px-4 mt-4 space-y-8">
+
+        <!-- Day 1 -->
+        <section id="day1" class="scroll-mt-16">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D1</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">11/27 (四) 抵達 & 購物</h2>
+                    <p class="text-sm text-gray-500">住：Southerlies Condominium Onna</p>
+                </div>
+            </div>
+            
+            <!-- FLIGHT CARD: CI120 -->
+            <div class="bg-gradient-to-r from-blue-50 to-white border border-blue-200 p-4 rounded-xl mb-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-bl-lg font-bold">去程</div>
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-lg text-blue-800"><i class="fa-solid fa-plane"></i> CI 0120</h3>
+                    <!-- Real-time Status Link -->
+                    <a href="https://www.google.com/search?q=flight+CI120" target="_blank" class="flex items-center gap-1 bg-white text-red-500 border border-red-200 px-3 py-1 rounded-full text-xs font-bold shadow-sm hover:bg-red-50 animate-pulse">
+                        <i class="fa-solid fa-tower-broadcast"></i> 即時航廈/登機口
+                    </a>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-xl text-gray-800">08:10</div>
+                        <div class="text-xs text-gray-500">台北 TPE (T2)</div>
+                        <span class="flight-badge badge-tw">台灣時間</span>
+                    </div>
+                    <div class="flex-1 border-t-2 border-dotted border-gray-300 mx-2 relative top-[-10px]">
+                        <i class="fa-solid fa-plane text-blue-300 absolute top-[-9px] left-1/2 transform -translate-x-1/2"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-xl text-gray-800">10:45</div>
+                        <div class="text-xs text-gray-500">沖繩 OKA</div>
+                        <span class="flight-badge badge-jp">日本時間</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 card-shadow space-y-6 relative overflow-hidden">
+                <div class="timeline-line"></div>
+
+                <!-- Item -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-blue-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        10:45 抵達 <a href="https://www.google.com/maps/search/?api=1&query=Naha+Airport" target="_blank" class="map-link">那霸機場 (OKA)<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">入境手續，前往接駁車處。</div>
+                </div>
+
+                <!-- Item -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        11:30 <a href="https://www.google.com/maps/search/?api=1&query=日本沖繩縣豐見城市豐崎3-37" target="_blank" class="map-link">OTS 豐崎店<i class="fa-solid fa-map-location-dot map-icon"></i></a> 取車
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1 mb-1"><i class="fa-solid fa-location-dot"></i> 豐見城市豐崎3-37</div>
+                    <div class="text-sm text-gray-600">
+                        <span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded text-xs">提醒</span> 檢查兒童座椅安裝。
+                    </div>
+                </div>
+
+                <!-- Item -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-red-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        13:00 【午餐】<a href="https://www.google.com/maps/search/?api=1&query=Jojoen+Parco+City" target="_blank" class="map-link">敘敘苑燒肉<i class="fa-solid fa-map-location-dot map-icon"></i></a> <i class="fa-solid fa-check text-green-500 ml-1"></i>
+                    </div>
+                    <div class="bg-red-50 p-2 rounded mt-1 border border-red-100">
+                        <div class="text-sm font-bold text-red-600"><i class="fa-regular fa-clock"></i> 已預約 13:00</div>
+                        <div class="text-xs text-gray-600">PARCO CITY 3F (綠色區域)</div>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-2">
+                        <i class="fa-solid fa-bag-shopping text-blue-400"></i> 14:30 自由逛街 (西松屋/Uniqlo/超市)
+                    </div>
+                </div>
+
+                <!-- Drive Info -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">16:30 開車北上 (往恩納)</div>
+                    <div class="bg-yellow-50 p-3 rounded-lg mt-2 border-l-4 border-yellow-400">
+                        <div class="text-xs font-bold text-yellow-700 flex items-center gap-1">
+                            <i class="fa-solid fa-triangle-exclamation"></i> 導航設定注意
+                        </div>
+                        <div class="text-sm text-gray-700 mt-1">
+                            西原 IC → 石川 IC (沖繩自動車道)<br>
+                            <span class="text-xs text-red-500 font-bold">*避開美軍基地路線以免塞車</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dinner -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        17:30 【晚餐】<a href="https://www.google.com/maps/search/?api=1&query=Hamanoya+Seafood" target="_blank" class="map-link">浜の家海鮮料理<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-1">必點：黃油烤魚定食、海鮮汁</div>
+                    <div class="text-xs text-red-500 mt-1"><i class="fa-solid fa-circle-exclamation"></i> 20:00 打烊，務必準時</div>
+                </div>
+
+                 <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-indigo-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        19:00 <a href="https://www.google.com/maps/search/?api=1&query=973+Maeganeku,+Onna,+Kunigami+District,+Okinawa+904-0414" target="_blank" class="map-link">飯店 Check-in<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600">Southerlies Condominium Onna</div>
+                    <div class="text-xs text-gray-500 mt-1"><i class="fa-solid fa-location-dot"></i> 973 Maeganeku, Onna</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Day 2 -->
+        <section id="day2" class="scroll-mt-16">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-cyan-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D2</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">11/28 (五) 水族館 & 和牛</h2>
+                    <p class="text-sm text-gray-500">住：Southerlies Condominium (續住)</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 card-shadow space-y-6 relative overflow-hidden">
+                 <div class="timeline-line"></div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">08:30 飯店出發</div>
+                    <div class="text-sm text-gray-600">行駛國道 58 號沿海 (風景優美)</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-cyan-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        10:00 <a href="https://www.google.com/maps/search/?api=1&query=Okinawa+Churaumi+Aquarium" target="_blank" class="map-link">美麗海水族館<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-xs bg-blue-100 text-blue-800 inline-block px-2 py-0.5 rounded mb-1">停車建議: P7 立體停車場</div>
+                    <div class="text-sm text-gray-600">重點：黑潮之海、觸摸池</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-blue-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        11:30 <a href="https://www.google.com/maps/search/?api=1&query=Okichan+Theater" target="_blank" class="map-link">海豚表演 (Okichan)<i class="fa-solid fa-map-location-dot map-icon"></i></a> 🐬
+                    </div>
+                    <div class="text-xs text-gray-500">備用場次：13:00 / 15:00</div>
+                    <div class="text-sm text-gray-600 mt-1">12:00 海洋博公園 (攀爬網放電)</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">13:00 【午餐】二選一</div>
+                    <ul class="text-sm text-gray-600 list-disc ml-4 mt-1">
+                        <li><a href="https://www.google.com/maps/search/?api=1&query=Inoh+Churaumi" target="_blank" class="hover:text-blue-600">館內 4F 海景自助餐「Inoh」</a></li>
+                        <li><a href="https://www.google.com/maps/search/?api=1&query=Hanasaki+Marche" target="_blank" class="hover:text-blue-600">Hanasaki Marche (飯糰/星巴克)</a></li>
+                    </ul>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        16:00 <a href="https://www.google.com/maps/search/?api=1&query=Manzamo" target="_blank" class="map-link">萬座毛 (象鼻岩)<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600">拍照散步 (離開北部南下)</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        17:30 <a href="https://www.google.com/maps/search/?api=1&query=101-1+Maeganeku,+Onna,+Kunigami+District,+Okinawa+904-0414" target="_blank" class="map-link">【晚餐】琉球の牛 恩納別館<i class="fa-solid fa-map-location-dot map-icon"></i></a> <i class="fa-solid fa-check text-green-500 ml-1"></i>
+                    </div>
+                    <div class="bg-red-50 p-2 rounded mt-1 border border-red-100">
+                        <div class="text-sm font-bold text-red-600"><i class="fa-regular fa-clock"></i> 已預約 17:30</div>
+                        <div class="text-xs text-gray-600 mb-1">務必準時，逾時會被取消！</div>
+                        <div class="text-xs text-gray-500 border-t border-red-200 pt-1">
+                            <i class="fa-solid fa-location-dot"></i> 101-1 Maeganeku, Onna
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Day 3 -->
+        <section id="day3" class="scroll-mt-16">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D3</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">11/29 (六) 美國村 & 返車</h2>
+                    <p class="text-sm text-gray-500">住：阿蒙特飯店 (那霸縣廳前)</p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 card-shadow space-y-6 relative overflow-hidden">
+                <div class="timeline-line"></div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">09:30 飯店退房南下</div>
+                    <div class="text-xs text-gray-500 mt-1">導航：石川 IC → 沖繩南 IC (避嘉手納)</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        10:30 <a href="https://www.google.com/maps/search/?api=1&query=American+Village+Okinawa" target="_blank" class="map-link">北谷美國村<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600">Depot Island 拍照、落日海灘</div>
+                    <div class="mt-2 p-2 bg-orange-50 rounded">
+                        <div class="font-bold text-sm text-orange-800">
+                            11:30 午餐：<a href="https://www.google.com/maps/search/?api=1&query=Gourmet+Sushi+Mihama" target="_blank" class="hover:text-blue-600 underline">迴轉壽司市場</a>
+                        </div>
+                        <div class="text-xs text-gray-600">策略：開店第一輪進場，避排隊。</div>
+                    </div>
+                </div>
+
+                <!-- Strategic Split -->
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-purple-600 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-purple-700">14:00 關鍵分流策略 <i class="fa-solid fa-shuffle"></i></div>
+                    
+                    <div class="mt-2 space-y-2">
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                            <div class="font-bold text-sm text-purple-900">Step 1: 15:00 抵達飯店</div>
+                            <div class="text-xs text-gray-600">
+                                <a href="https://www.google.com/maps/search/?api=1&query=Almont+Hotel+Naha-Kenchomae" target="_blank" class="text-purple-700 underline decoration-dotted">阿蒙特飯店 (縣廳前)<i class="fa-solid fa-location-arrow text-xs ml-1"></i></a>
+                            </div>
+                            <div class="text-sm font-medium text-purple-700 mt-1">👨‍👩‍👧 家人 + 行李 下車休息</div>
+                        </div>
+
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                            <div class="font-bold text-sm text-green-900">Step 2: 駕駛去還車</div>
+                            <div class="text-xs text-gray-600">
+                                <a href="https://www.google.com/maps/search/?api=1&query=日本沖繩縣豐見城市豐崎3-37" target="_blank" class="text-green-700 underline decoration-dotted">OTS 豐崎店 (先加滿油)<i class="fa-solid fa-location-arrow text-xs ml-1"></i></a>
+                            </div>
+                            <div class="text-xs text-green-800 mt-1"><i class="fa-solid fa-location-dot"></i> 豐見城市豐崎3-37</div>
+                            <div class="text-sm font-medium text-green-700 mt-1">🚗 駕駛 + 太太 前往</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-indigo-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">17:15 全員飯店會合</div>
+                    <div class="text-sm text-gray-600">駕駛搭計程車/單軌返回</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">18:30 【晚餐】彈性安排</div>
+                    <div class="text-sm text-gray-600">備案：BACAR 披薩 / Sam's 鐵板燒 / 88 牛排</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Day 4 -->
+        <section id="day4" class="scroll-mt-16">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="bg-pink-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D4</div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">11/30 (日) 最後採買</h2>
+                    <p class="text-sm text-gray-500">回程：11:55 班機</p>
+                </div>
+            </div>
+
+            <!-- FLIGHT CARD: CI121 -->
+            <div class="bg-gradient-to-r from-pink-50 to-white border border-pink-200 p-4 rounded-xl mb-4 shadow-sm relative overflow-hidden">
+                <div class="absolute right-0 top-0 bg-pink-100 text-pink-600 text-xs px-2 py-1 rounded-bl-lg font-bold">回程</div>
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-bold text-lg text-pink-800"><i class="fa-solid fa-plane-up"></i> CI 0121</h3>
+                    <!-- Real-time Status Link -->
+                    <a href="https://www.google.com/search?q=flight+CI121" target="_blank" class="flex items-center gap-1 bg-white text-red-500 border border-red-200 px-3 py-1 rounded-full text-xs font-bold shadow-sm hover:bg-red-50 animate-pulse">
+                        <i class="fa-solid fa-tower-broadcast"></i> 即時航廈/登機口
+                    </a>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <div class="text-center">
+                        <div class="font-bold text-xl text-gray-800">11:55</div>
+                        <div class="text-xs text-gray-500">沖繩 OKA</div>
+                        <span class="flight-badge badge-jp">日本時間</span>
+                    </div>
+                    <div class="flex-1 border-t-2 border-dotted border-gray-300 mx-2 relative top-[-10px]">
+                        <i class="fa-solid fa-plane text-pink-300 absolute top-[-9px] left-1/2 transform -translate-x-1/2"></i>
+                    </div>
+                    <div class="text-center">
+                        <div class="font-bold text-xl text-gray-800">12:35</div>
+                        <div class="text-xs text-gray-500">台北 TPE (T2)</div>
+                        <span class="flight-badge badge-tw">台灣時間</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-5 card-shadow space-y-6 relative overflow-hidden">
+                <div class="timeline-line"></div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        08:30 <a href="https://www.google.com/maps/search/?api=1&query=Kokusai+Dori" target="_blank" class="map-link">國際通早晨散步<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600">從飯店步行 3 分鐘。把握最後時光。</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-yellow-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        09:40 步行前往 <a href="https://www.google.com/maps/search/?api=1&query=Kenchomae+Station+Okinawa" target="_blank" class="map-link">單軌縣廳前站<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="text-sm text-gray-600">目標：「縣廳前站」</div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-blue-600 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        10:00 抵達 <a href="https://www.google.com/maps/search/?api=1&query=Naha+Airport" target="_blank" class="map-link">那霸機場<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="mt-2 text-sm text-gray-600">
+                        <span class="block mb-1">1. 先去 3F 國際線報到掛行李</span>
+                        <span class="block">2. 再去 2F 國內線最後採買 (福砂屋/飯糰)</span>
+                    </div>
+                </div>
+
+                <div class="relative pl-8">
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-gray-800 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">11:55 平安返台 ✈️</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer with "Add to Home Screen" Instructions -->
+    <footer class="pb-12 pt-8">
+        <div class="mx-4 bg-gray-100 rounded-xl p-4 text-center border border-gray-200">
+            <h3 class="font-bold text-gray-700 mb-2">📱 如何存成 App?</h3>
+            <div class="grid grid-cols-2 gap-4 text-xs text-gray-600">
+                <div>
+                    <strong class="block text-gray-800 mb-1"><i class="fa-brands fa-apple"></i> iPhone (Safari)</strong>
+                    點擊下方「分享」按鈕 <i class="fa-solid fa-arrow-up-from-bracket"></i><br>
+                    選擇「加入主畫面」
+                </div>
+                <div>
+                    <strong class="block text-gray-800 mb-1"><i class="fa-brands fa-android"></i> Android (Chrome)</strong>
+                    點擊右上方選單 <i class="fa-solid fa-ellipsis-vertical"></i><br>
+                    選擇「安裝應用程式」或「加到主畫面」
+                </div>
+            </div>
+        </div>
+        <p class="text-center text-gray-400 text-sm mt-6">祝 沖繩之旅 快樂順利！</p>
+    </footer>
+
+    <!-- Script for Scroll Spy -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+            const headerOffset = 200; // Adjust to trigger a bit earlier
+
+            function changeLinkState() {
+                let index = sections.length;
+
+                // Find the last section whose top is above the visual threshold
+                while(--index && window.scrollY + headerOffset < sections[index].offsetTop) {}
+                
+                // Reset all links
+                navLinks.forEach((link) => {
+                    link.classList.remove('bg-blue-600', 'text-white');
+                    link.classList.add('bg-white', 'text-blue-600');
+                });
+
+                // Set active link if valid index
+                if (index >= 0) {
+                     navLinks[index].classList.remove('bg-white', 'text-blue-600');
+                     navLinks[index].classList.add('bg-blue-600', 'text-white');
+                     
+                     // Auto-scroll nav bar to keep active button in view
+                     navLinks[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                }
+            }
+
+            // Listen for scroll
+            window.addEventListener('scroll', changeLinkState);
+            
+            // Initial call
+            changeLinkState();
+
+            // Improve click UX: Update immediately on click
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    // Small timeout to allow smooth scroll to start
+                    setTimeout(changeLinkState, 50);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
