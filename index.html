@@ -103,6 +103,15 @@
             margin-bottom: 2px;
         }
 
+        /* Custom Scrollbar for Forecast List */
+        .forecast-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .forecast-list::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
         /* --- PRINT STYLES START --- */
         @media print {
             /* Basic Reset */
@@ -179,7 +188,7 @@
                 <i class="fa-solid fa-calendar-days"></i> 11/27 (四) — 11/30 (日)
             </p>
             <p class="text-blue-100 mt-1 flex items-center gap-2">
-                <i class="fa-solid fa-users"></i> 6 大 1 小 (親子自駕)
+                <i class="fa-solid fa-users"></i> 5 大 1 小 (親子自駕)
             </p>
         </div>
     </header>
@@ -212,7 +221,7 @@
                     <div class="text-xs text-gray-500 mb-1">豐見城市豐崎3-37</div>
                 </div>
                 <div class="bg-green-50 text-green-700 px-2 py-1 rounded text-xs font-bold">
-                    6大1小
+                    5大1小
                 </div>
             </div>
         </div>
@@ -394,7 +403,7 @@
             <div class="flex items-center gap-3 mb-4">
                 <div class="bg-cyan-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D2</div>
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">11/28 (五) 水族館 & 和牛</h2>
+                    <h2 class="text-xl font-bold text-gray-800">11/28 (五) 水族館</h2>
                     <p class="text-sm text-gray-500">住：Southerlies Condominium (續住)</p>
                 </div>
             </div>
@@ -464,7 +473,7 @@
             <div class="flex items-center gap-3 mb-4">
                 <div class="bg-orange-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">D3</div>
                 <div>
-                    <h2 class="text-xl font-bold text-gray-800">11/29 (六) 美國村 & 返車</h2>
+                    <h2 class="text-xl font-bold text-gray-800">11/29 (六) 美國村</h2>
                     <p class="text-sm text-gray-500">住：阿蒙特飯店 (那霸縣廳前)</p>
                 </div>
             </div>
@@ -524,9 +533,17 @@
                 </div>
 
                 <div class="relative pl-8">
-                    <div class="absolute left-0 top-1 w-4 h-4 bg-orange-400 rounded-full border-2 border-white"></div>
-                    <div class="font-bold text-gray-800">18:30 【晚餐】彈性安排</div>
-                    <div class="text-sm text-gray-600">備案：BACAR 披薩 / Sam's 鐵板燒 / 88 牛排</div>
+                    <div class="absolute left-0 top-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                    <div class="font-bold text-gray-800">
+                        17:30 <a href="https://www.google.com/maps/search/?api=1&query=Okinawa,+Naha,+Asahimachi,+1+Chome−9+カフーナ旭橋B街区ビル+1Ｆ" target="_blank" class="map-link">【晚餐】我那霸豬肉店 Kafuna旭橋店<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                    </div>
+                    <div class="bg-red-50 p-2 rounded mt-1 border border-red-100">
+                        <div class="text-sm font-bold text-red-600"><i class="fa-regular fa-clock"></i> 用餐時間 17:30</div>
+                        <div class="text-xs text-gray-600 mb-1">阿古豬涮涮鍋名店 🐷</div>
+                        <div class="text-xs text-gray-500 border-t border-red-200 pt-1">
+                            <i class="fa-solid fa-location-dot"></i> 旭橋 B 街區大樓 1F
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -574,7 +591,7 @@
                 <div class="relative pl-8">
                     <div class="absolute left-0 top-1 w-4 h-4 bg-gray-400 rounded-full border-2 border-white"></div>
                     <div class="font-bold text-gray-800">
-                        08:30 <a href="https://www.google.com/maps/search/?api=1&query=Kokusai+Dori" target="_blank" class="map-link">國際通早晨散步<i class="fa-solid fa-map-location-dot map-icon"></i></a>
+                        08:30 <a href="https://www.google.com/maps/search/?api=1&query=Kokusai+Dori" target="_blank" class="map-link">國際通早晨散步<i class="fa-solid fa-map-location-dot map-icon"></i></a> <span class="text-sm text-gray-500 font-normal">(選擇性)</span>
                     </div>
                     <div class="text-sm text-gray-600">從飯店步行 3 分鐘。把握最後時光。</div>
                 </div>
